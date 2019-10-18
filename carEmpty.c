@@ -38,16 +38,6 @@ char win = '*';
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-int temColisaoColuna(){
-    //deve retornar 1 se houve colisao
-    if(matrix[0][0]=='>' && matrix[0][1]!=' '){
-        return 1;
-    }else if(matrix[0][1]=='>' && matrix[1][1]!=' '){
-        return 1;
-    }else{
-    }
-    return 0;
-}
 
 int temColisaoFrente(){
     //deve retornar 1 se houve colisao
@@ -100,15 +90,20 @@ void generateMatrix(){
 
 void moverLeft(){
     //Se o objeto daquela celula for diferente de um carro, deve ser movido para a esquerda
-    
-    for(int linha = 0; linha < 2; linha++) {
-        for(int coluna = 0; coluna < 128; coluna++) {
-            if(matrix[coluna][linha] != '>') {
-                matrix[coluna][linha] = matrix[coluna + 1][linha];
+    if(temColisaoFrente()==0){
+        for(int linha = 0; linha < 2; linha++) {
+            for(int coluna = 0; coluna < 128; coluna++) {
+                if(matrix[coluna][linha] != '>') {
+                    matrix[coluna][linha] = matrix[coluna + 1][linha];
+                }
             }
         }
+        need_print=1;
+
+    }else{
+        showLose();
     }
-    need_print=1;
+    
     
 }
 
@@ -120,7 +115,7 @@ void moveCarroBaixo(){
     //caso esteja livre, faz o movimento
     //caso o carro ja esteja na segunda linha, nao faz nada
     if(matrix[0][0] == '>' && matrix[0][1] == '#'){
-      //showLose();
+      showLose();
     } else if(matrix[0][1] == ' ' && matrix[0][0] == '>'){
       matrix[0][0] = ' ';
       matrix[0][1] = '>';
@@ -135,7 +130,7 @@ void moveCarroCima(){
     //caso esteja livre, faz o movimento
     //caso o carro ja esteja na primeira linha, nao faz nada
     if(matrix[0][1] == '>' && matrix[0][0] == '#'){
-      //showLose();
+      showLose();
     } else if(matrix[0][0] == ' ' && matrix[0][1] == '>'){
       matrix[0][0] = '>';
       matrix[0][1] = ' ';
