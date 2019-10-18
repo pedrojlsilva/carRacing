@@ -40,69 +40,20 @@ char win = '*';
 
 
 int temColisaoFrente(){
-    //deve retornar 1 se houve colisao
-    if(matrix[0][0]=='>' && matrix[1][0]!=' '){
-        return 1;
-    }else if(matrix[0][1]=='>' && matrix[1][1]!=' '){
-        return 1;
-    }else{
-    }
-    return 0;
+
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void generateMatrix(){
-  
-//gerar uma matriz de 2x128 onde cada coluna segue o seguinte padrao
-//Tipo1: '#' e ' '
-//Tipo2: ' ' e '#'
-//Tipo3: ' ' e ' '
-     // limpa toda a matriz
-     for (int j=0;j<130;j++){
-        matrix[j][0]=' ';
-        matrix[j][1]=' ';
-    }
-    // inicia a matriz apenas da coluna 14 em diante para que o jogo 
-    // não comece com obstaculo em cima do carro e ja encerre
-    for (int j=14;j<129;j=j+2){
-        int valor = random(2)%2;
-        if(valor == 0){
-            matrix[j][0]=' ';
-            matrix[j][1]='#';
-        }else if(valor == 1){
-            matrix[j][0]='#';
-            matrix[j][1]=' ';
-        }
-        
-    }
-    
-//Carro inicia em:
-     matrix [0][0]=' ';
-     matrix [0][1]='>';
-// linha de vitoria
-     matrix [128][0]='#';
-     matrix [128][1]='#';
+
 
 }       
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void moverLeft(){
-    //Se o objeto daquela celula for diferente de um carro, deve ser movido para a esquerda
-    if(temColisaoFrente()==0){
-        for(int linha = 0; linha < 2; linha++) {
-            for(int coluna = 0; coluna < 128; coluna++) {
-                if(matrix[coluna][linha] != '>') {
-                    matrix[coluna][linha] = matrix[coluna + 1][linha];
-                }
-            }
-        }
-        need_print=1;
 
-    }else{
-        showLose();
-    }
     
     
 }
@@ -110,51 +61,19 @@ void moverLeft(){
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void moveCarroBaixo(){
-    //checa se o carro está na linha de cima e o conteudo da segunda linha
-    //caso haja obstaculo, a partida será encerrada
-    //caso esteja livre, faz o movimento
-    //caso o carro ja esteja na segunda linha, nao faz nada
-    if(matrix[0][0] == '>' && matrix[0][1] == '#'){
-      showLose();
-    } else if(matrix[0][1] == ' ' && matrix[0][0] == '>'){
-      matrix[0][0] = ' ';
-      matrix[0][1] = '>';
-    }
-    need_print=1;
+
 
 }
 
 void moveCarroCima(){
-    //checa se o carro está na segunda linha e o conteudo da primeira linha
-    //caso haja obstaculo, a partida será encerrada
-    //caso esteja livre, faz o movimento
-    //caso o carro ja esteja na primeira linha, nao faz nada
-    if(matrix[0][1] == '>' && matrix[0][0] == '#'){
-      showLose();
-    } else if(matrix[0][0] == ' ' && matrix[0][1] == '>'){
-      matrix[0][0] = '>';
-      matrix[0][1] = ' ';
-    }
-    need_print=1;
+
 }
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void printPista(){
-    //atualiza o LCD
-    lcd.clear();
-    lcd.setCursor(0,0);
 
-    for(int i = 0; i < 17; i++){
-      lcd.print(matrix[i][0]);
-    }
-
-    lcd.setCursor(0,1);
-    for(int i = 0; i < 16; i++){
-      lcd.print(matrix[i][1]);
-    }
-     need_print=0; 
     
 }
 
@@ -162,36 +81,16 @@ void printPista(){
 
 //funçoes de inicio e termino do jogo
 void showStart(){
-    game_control=1;
-    need_print=1;
-    generateMatrix();
-    lcd.clear();
-    lcd.setCursor(0,0);
-    lcd.print("hello, world!");
-    lcd.setCursor(0,1);
-    lcd.print("Equipe 7");
+
     
 }
 
 void showWin(){
-    lcd.clear();
-    lcd.setCursor(0,0);
-    lcd.print("Parabens!");
-    lcd.setCursor(0,1);
-    lcd.print("Voce ganhou!");
-    game_control = 0;
 
-    delay(2000);
 }
 
 void showLose(){
-    lcd.clear();
-    lcd.setCursor(0,0);
-    lcd.print(":( :( :( :(");
-    lcd.setCursor(0,1);
-    lcd.print("Voce perdeu");
-    game_control=0;
-    delay(2000);
+
 }
 
 

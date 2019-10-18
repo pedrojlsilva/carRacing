@@ -23,13 +23,13 @@
 #include <LiquidCrystal.h>
 
 int game_control = 1;
-
+int need_print = 1;
 
 // initialize the library with the numbers of the interface pins
 LiquidCrystal lcd(12, 11, 5, 4, 3, 2);
 
 int move = 0;
-char matrix[2][129];
+char matrix[129][2];
 
 char carro = '>';
 char obstaculo = '#';
@@ -38,11 +38,12 @@ char win = '*';
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-int temColisao(){
+
+int temColisaoFrente(){
     //deve retornar 1 se houve colisao
-    if(matrix[0][0]=='>' && matrix[0][1]!=' '){
+    if(matrix[0][0]=='>' && matrix[1][0]!=' '){
         return 1;
-    }else if(matrix[1][0]=='>' && matrix[1][1]!=' '){
+    }else if(matrix[0][1]=='>' && matrix[1][1]!=' '){
         return 1;
     }else{
     }
@@ -52,61 +53,36 @@ int temColisao(){
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void generateMatrix(){
-
-
- //Carro inicia em:
-     matrix [0][0]=' ';
-     matrix [1][0]='>';
-// linha de vitoria
-     matrix [0][128]='*';
-     matrix [1][128]='*';
-   
+  
 //gerar uma matriz de 2x128 onde cada coluna segue o seguinte padrao
 //Tipo1: '#' e ' '
 //Tipo2: ' ' e '#'
 //Tipo3: ' ' e ' '
-     int num, j, z;
-     for (z=0;z<129;z++){
-        for (j=4;j<7;j++){
-           num= random(4) % 4;
-           if (num==0){
-             
-                matrix [0][z]='#';
-                matrix [1][z]=' ';}
-           else if (num==1){
-                  
-                  matrix [0][z]=' ';
-                  matrix [1][z]='#';}
-           else {
-               
-               matrix [0][z]=' ';
-               matrix [1][z]=' ';}
+     // limpa toda a matriz
+     for (int j=0;j<130;j++){
+        matrix[j][0]=' ';
+        matrix[j][1]=' ';
+    }
+    // inicia a matriz apenas da coluna 14 em diante para que o jogo 
+    // não comece com obstaculo em cima do carro e ja encerre
+    for (int j=14;j<129;j=j+2){
+        int valor = random(2)%2;
+        if(valor == 0){
+            matrix[j][0]=' ';
+            matrix[j][1]='#';
+        }else if(valor == 1){
+            matrix[j][0]='#';
+            matrix[j][1]=' ';
         }
-     }
+        
+    }
     
-    
-//Existem basicamente 3 tipos de novas colunas:     
-//Tipo 1: Coluna com obstaculo em cima e nada em baixo.   
-//Tipo 2: Coluna sem nada em cima e com obstavulo em baixo.
-//Tipo 3: Coluna sem nada em cima e com obstaculo embaixo.
-     
-
-//Agora verificamos se ha espaço para o carro passar e assim limpamos 1 celula aleatoriamente se n houver:
-     int num2,i;
-       for (i=0;i<128;i++){
-          for (j=4;j<6;j++){
-             num2= random(4) % 3;
-             for (z=2;z<128;z++){
-                if (matrix[0][i]=='#' && matrix[1][i]=='#'){
-                  if (num2==1){
-                    matrix [0][z]=' ';
-                    matrix [1][z]='#';}
-
-                  else {
-                      matrix [0][z]='#';
-                      matrix [0][z]=' ';}}}
-          }
-       }
+//Carro inicia em:
+     matrix [0][0]=' ';
+     matrix [0][1]='>';
+// linha de vitoria
+     matrix [128][0]='#';
+     matrix [128][1]='#';
 
 }       
 
@@ -114,29 +90,87 @@ void generateMatrix(){
 
 void moverLeft(){
     //Se o objeto daquela celula for diferente de um carro, deve ser movido para a esquerda
-    if(temColisao()){
-        showLose();
-    }else{
-        for(int r = 0; r < 2; r++) {
-            for(int c = 0; c < 128; c++) {
-                if(matrix[r][c] != '>') {
-                    matrix[r][c] = matrix[r][c + 1];
+    if(temColisaoFrente()==0){
+        for(int linha = 0; linha < 2; linha++) {
+            for(int coluna = 0; coluna < 128; coluna++) {
+                if(matrix[coluna][linha] != '>') {
+                    matrix[coluna][linha] = matrix[coluna + 1][linha];
                 }
             }
         }
+        need_print=1;
+
+    }else{
+        showLose();
     }
+    
     
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
+void moveCarroBaixo(){
+    //checa se o carro está na linha de cima e o conteudo da segunda linha
+    //caso haja obstaculo, a partida será encerrada
+    //caso esteja livre, faz o movimento
+    //caso o carro ja esteja na segunda linha, nao faz nada
+    if(matrix[0][0] == '>' && matrix[0][1] == '#'){
+      showLose();
+    } else if(matrix[0][1] == ' ' && matrix[0][0] == '>'){
+      matrix[0][0] = ' ';
+      matrix[0][1] = '>';
+    }
+    need_print=1;
+
+}
+
+void moveCarroCima(){
+    //checa se o carro está na segunda linha e o conteudo da primeira linha
+    //caso haja obstaculo, a partida será encerrada
+    //caso esteja livre, faz o movimento
+    //caso o carro ja esteja na primeira linha, nao faz nada
+    if(matrix[0][1] == '>' && matrix[0][0] == '#'){
+      showLose();
+    } else if(matrix[0][0] == ' ' && matrix[0][1] == '>'){
+      matrix[0][0] = '>';
+      matrix[0][1] = ' ';
+    }
+    need_print=1;
+}
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+void printPista(){
+    //atualiza o LCD
+    lcd.clear();
+    lcd.setCursor(0,0);
+
+    for(int i = 0; i < 17; i++){
+      lcd.print(matrix[i][0]);
+    }
+
+    lcd.setCursor(0,1);
+    for(int i = 0; i < 16; i++){
+      lcd.print(matrix[i][1]);
+    }
+     need_print=0; 
+    
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+//funçoes de inicio e termino do jogo
 void showStart(){
     game_control=1;
+    need_print=1;
+    generateMatrix();
     lcd.clear();
     lcd.setCursor(0,0);
     lcd.print("hello, world!");
     lcd.setCursor(0,1);
     lcd.print("Equipe 7");
+    
 }
 
 void showWin(){
@@ -160,51 +194,9 @@ void showLose(){
     delay(2000);
 }
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-void moveCarroBaixo(){
-    //deve checar se na celula celula da segund alinha tem carro, caso tenha
-    if(matrix[1][0] == '#'){
-      //deve encerrar a partirda, caso não tenha, deve mover o carro,
-      showLose();
-    }
-    else if(matrix[1][0] == ' '){
-      matrix[1][0] = '>';
-      matrix[0][0] = ' ';
-    }
-    //caso o carro ja esteja na segunda linha, nao deve fazer nada
-}
-
-void moveCarroCima(){
-    // mesma coisa de moveCarroBaixo só que para a linha de cima
-    if(matrix[0][0] == '#'){
-      showLose();
-    }
-    else if(matrix[1][0] == ' '){
-      matrix[0][0] = '>';
-      matrix[1][0] = ' ';
-    }
-}
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
-void printPista(){
-    lcd.clear();
-    lcd.setCursor(0,0);
-
-    for(int i = 0; i < 16; i++){
-      lcd.print(matrix[0][i]);
-    }
-
-    lcd.setCursor(1,0);
-    for(int i = 0; i < 16; i++){
-      lcd.print(matrix[1][i]);
-    }
-      
-    
-}
-
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 void setup() {
 
@@ -219,38 +211,46 @@ void setup() {
 
 void loop() {
   
- generateMatrix();
- int controle =1; 
- while(controle){ 
-   showStart();
+
+ int controle = 1;
+ showStart(); 
+ while(controle){    
    delay(50);
    if(digitalRead(BUTTON1)==HIGH || digitalRead(BUTTON2)==HIGH)
     controle = 0;
- }  
+ }
+
+ delay(700);
+
+int tempoAnterior = millis();
 
  while(game_control){
-  
-  printPista();  
+
+  if(need_print){
+      printPista();
+  }
   
 //resposta botoes
     
     if(digitalRead(BUTTON1)==HIGH){
       moveCarroCima();
-      printPista();
+      
     }
     if(digitalRead(BUTTON2)==HIGH){
       moveCarroBaixo();
-      printPista();
     }
-    delay(20);
 
 
-//andar na pista
-    if(matrix[0][1]==win && matrix[1][1]==win) {
+    if(millis()-tempoAnterior >= 750){
+        tempoAnterior=millis();
+        if(matrix[1][0]=='#' && matrix[1][1]=='#') {
         showWin();
         }else{
             moverLeft();
         }
+
+    }
+
  }
  
 }
