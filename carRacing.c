@@ -201,7 +201,7 @@ void showLose(){
 void setup() {
 
 //inicia o game
-
+  Serial.Begin(9600);
   lcd.begin(16, 2);
   pinMode(BUTTON1, INPUT);
   pinMode(BUTTON2, INPUT);
@@ -239,12 +239,22 @@ int tempoAnterior = millis();
     if(digitalRead(BUTTON2)==HIGH){
       moveCarroBaixo();
     }
+//resposta ao teclado
+    if(Serial.available()){
+        if( Serial.read() == 'a'){
+            moveCarroCima();
+        }
+        if(Serial.read() == 's'){
+            moveCarroBaixo();
+        }
+    }
+
 
 
     if(millis()-tempoAnterior >= 750){
         tempoAnterior=millis();
         if(matrix[1][0]=='#' && matrix[1][1]=='#') {
-        showWin();
+            showWin();
         }else{
             moverLeft();
         }
