@@ -11,6 +11,4 @@ O programa deve rodar em um Arduino usando como interface uma tela LCD e 2 botõ
 
 A lista de materiais pode ser encontrada [aqui](./bom.csv).
 
-## Step up
 
-Como evolução do projeto deve ser implementado uma leitura de comandos pela porta serial, permitindo que o jogo seja controlado pelo teclado.
