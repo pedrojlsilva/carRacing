@@ -3,7 +3,7 @@ Serial myPort;                    // Create object from Serial class
 
 void setup() {
   size(200, 200);                                  //set window size to 200 by 200 pixels
-  String portName = "/dev/ttyUSB0";              //list serial ports, save the first one as portName
+  String portName = "/dev/ttyACM1";              //list serial ports, save the first one as portName
   myPort = new Serial(this, portName, 9600);       //initialize the serial port object
 }
 

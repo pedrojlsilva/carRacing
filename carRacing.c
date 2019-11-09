@@ -201,7 +201,7 @@ void showLose(){
 void setup() {
 
 //inicia o game
-  Serial.Begin(9600);
+  Serial.begin(9600);
   lcd.begin(16, 2);
   pinMode(BUTTON1, INPUT);
   pinMode(BUTTON2, INPUT);
@@ -222,7 +222,7 @@ void loop() {
 
  delay(700);
 
-int tempoAnterior = millis();
+unsigned long tempoAnterior = millis();
 
  while(game_control){
 
